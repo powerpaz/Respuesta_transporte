@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Respuesta | Validador & Generador (Transporte Escolar)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css"/>
+
+  <!-- XLSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"></script>
+
+  <!-- DOCX templating -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.6/pizzip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.46.2/docxtemplater.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/logo.png" class="logo" alt="logo"/>
+      <div>
+        <h1>Respuesta</h1>
+        <div class="subtitle">Validador + Generador automático de respuesta (Word)</div>
+      </div>
+    </div>
+    <div class="badge">Módulo sin mapa • Enfoque: revisión y emisión</div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <h2>1) Cargar insumos</h2>
+      <p class="muted">Arrastra y suelta o selecciona archivos. Se valida en local (no se sube nada).</p>
+
+      <div class="dropgrid">
+        <div class="dropbox" data-accept=".pdf" id="dropMemo">
+          <div class="dropTitle">Memorando (PDF)</div>
+          <div class="dropHint">Arrastra aquí el PDF</div>
+          <input type="file" accept="application/pdf" id="memoFile" />
+          <div class="fileMeta" id="memoMeta">Sin archivo</div>
+        </div>
+
+        <div class="dropbox" data-accept=".xlsx,.xls,.xlsm" id="dropModel">
+          <div class="dropTitle">Modelamiento (Excel)</div>
+          <div class="dropHint">Arrastra aquí el Excel</div>
+          <input type="file" accept=".xlsx,.xls,.xlsm" id="modelFile" />
+          <div class="fileMeta" id="modelMeta">Sin archivo</div>
+        </div>
+
+        <div class="dropbox" data-accept=".xlsx,.xls,.xlsm" id="dropRef">
+          <div class="dropTitle">Referencia Beneficiarios (Excel)</div>
+          <div class="dropHint">Opcional, pero recomendado</div>
+          <input type="file" accept=".xlsx,.xls,.xlsm" id="refFile" />
+          <div class="fileMeta" id="refMeta">Sin archivo</div>
+        </div>
+
+        <div class="dropbox" data-accept=".docx" id="dropTpl">
+          <div class="dropTitle">Plantilla (DOCX)</div>
+          <div class="dropHint">Puedes usar la incluida</div>
+          <input type="file" accept=".docx" id="tplFile" />
+          <div class="fileMeta" id="tplMeta">
+            Incluida: <code>templates/plantilla_respuesta.docx</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="btnValidate">Validar</button>
+        <button class="btn" id="btnReset">Limpiar</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <h2>2) Datos del memorando</h2>
+      <p class="muted">Se intenta extraer del PDF. Si algo no aparece, lo ajustas aquí (y se usa en el Word).</p>
+
+      <div class="form">
+        <label>Nro. Memorando
+          <input id="fMemoNro" placeholder="Ej: MINEDUC-CZ1-2024-02499-M"/>
+        </label>
+        <label>Fecha
+          <input id="fMemoFecha" placeholder="Ej: 15 de enero de 2026"/>
+        </label>
+        <label>Para
+          <input id="fPara" placeholder="Ej: Coordinación Zonal / Dirección Distrital"/>
+        </label>
+        <label>De
+          <input id="fDe" placeholder="Ej: Dirección / Analista responsable"/>
+        </label>
+        <label>Asunto
+          <input id="fAsunto" placeholder="Ej: Pronunciamiento sobre transporte escolar"/>
+        </label>
+        <label>Firma
+          <input id="fFirma" placeholder="Ej: Nombres y Apellidos"/>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <h2>3) Resultado de validación</h2>
+        <div id="statusPill" class="pill neutral">Sin ejecutar</div>
+      </div>
+
+      <div class="resultBox" id="resultBox">
+        <div class="placeholder">
+          Ejecuta <b>Validar</b> para ver el checklist.
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn success" id="btnGenerate" disabled>Generar respuesta (Word)</button>
+        <a class="link" href="templates/plantilla_respuesta.docx" download>Descargar plantilla incluida</a>
+      </div>
+
+      <div class="note">
+        <b>Tip:</b> Si quieres usar tu formato oficial, cárgalo en “Plantilla (DOCX)” y asegúrate de que contenga
+        los placeholders: <code>{{memo_nro}}</code>, <code>{{memo_fecha}}</code>, <code>{{para}}</code>, <code>{{de}}</code>,
+        <code>{{asunto}}</code>, <code>{{resultado_general}}</code>, <code>{{resumen_texto}}</code>, <code>{{conclusion}}</code>, <code>{{firma}}</code>.
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Proyecto: <b>Respuesta</b> • Listo para GitHub Pages.
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
